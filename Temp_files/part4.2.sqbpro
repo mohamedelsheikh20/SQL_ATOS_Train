@@ -53,4 +53,4 @@ END;</sql><sql name="distinct Types">SELECT DISTINCT
 	
 FROM fct_SampleSuperstore_Purchase
 
--- ('Second Class - Consumer', 'Standard Class - Consumer', 'First Class - Consumer', 'Same Day - Consumer') </sql><current_tab id="3"/></tab_sql></sqlb_project>
+-- ('Second Class - Consumer', 'Standard Class - Consumer', 'First Class - Consumer', 'Same Day - Consumer') </sql><current_tab id="0"/></tab_sql></sqlb_project>

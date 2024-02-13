@@ -6,5 +6,6 @@
 - --
 - [x] Task3 `sql queries`.
 - --
-- [ ] Task4 `sql queries`.
+- [ ] Task4.1 `sql queries`.
+- [ ] Task4.2 `sql query`.
 - --

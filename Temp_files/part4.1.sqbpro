@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/elshe5/Downloads/Video/test/Temp_files/sales.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure query browser pragmas" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="1296"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,5:mainsales"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="sales" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="3" mode="0"/></sort><column_widths><column index="1" value="104"/><column index="2" value="117"/><column index="3" value="93"/><column index="4" value="76"/><column index="5" value="82"/><column index="6" value="163"/><column index="7" value="65"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="Add data">INSERT INTO sales (product_id, customer_id, sale_date, amount, quantity) 
+VALUES
+    (1, 1, '2023-01-01', 50.00, 2),
+    (2, 2, '2023-01-05', 75.00, 1),
+    (3, 3, '2023-01-10', 30.00, 3),
+    (4, 4, '2023-02-02', 20.00, 1),
+    (5, 5, '2023-02-03', 100.00, 2),
+    (6, 6, '2023-02-03', 45.00, 1),
+    (7, 1, '2023-02-04', 60.00, 3),
+    (8, 2, '2023-02-05', 25.00, 2),
+    (9, 2, '2023-02-06', 80.00, 1),
+    (1, 4, '2023-02-06', 35.00, 2);</sql><sql name="part1.1.sql">-- SELECT *
+-- FROM sales
+-- WHERE sale_date BETWEEN '2023-01-01' AND '2023-02-07'
+-- ORDER BY quantity DESC
+-- LIMIT 10;
+
+with 
+
+get_top_product_sold as (
+	select
+
+		*,
+		-- assuming that the product_id is exists many times
+		sum(quantity) as sum_quantity,
+		dense_rank() OVER (ORDER by sum(quantity) DESC) as product_rnk
+		
+	from sales
+	where sale_date between '2023-01-01' and '2023-02-07'
+	group by product_id
+)
+
+select 
+	*
+from get_top_product_sold
+where product_rnk &lt;= 10;</sql><sql name="part1.2.sql">-- SELECT product_category, amount, sale_date
+-- FROM sales
+-- ORDER BY product_category, sale_date
+
+
+SELECT 
+
+	product_category, 
+	amount,
+	sum(amount) over (PARTITION by product_category order by sale_date) as total_sales,
+	sale_date
+
+FROM sales</sql><sql name="part1.3.sql">-- SELECT customer_id, region , amount
+--     FROM sales
+
+with
+
+customers_avg_per_region as (
+	SELECT 
+		customer_id, 
+		region, 
+		avg(amount) as avg_amount_per_cust		
+	FROM sales
+	group by region, customer_id
+)
+select 
+
+	region,
+	customer_id,  
+	max(avg_amount_per_cust) as max_avg_per_customer
+
+from customers_avg_per_region
+group by region</sql><sql name="part1.4">-- SELECT product_id,amount, sale_date
+-- FROM sales;
+
+
+-- year over year groth ((Value Current Year – Value Last Year) / Value Last Year) x 100
+
+with 
+
+-- for each year get sum of sales for each product
+sales_products_per_year as (
+
+    SELECT 
+    
+    	product_id,
+    	sum(amount) as amount_per_product,
+    	extract(year from sale_date) as year_date
+    
+    FROM sales
+    group by year_date, product_id
+),
+
+-- get the previous year
+add_sales_per_previous_year as (
+    select 
+    
+        *,
+        lag(amount_per_product) over (PARTITION by product_id order by year_date) as previous_year_amount,
+
+        -- using equation year over year growth = ((Value Current Year – Value Last Year) / Value Last Year) x 100
+        ((amount_per_product - previous_year_amount) / previous_year_amount) * 100 as YOY_Growth
+    
+    from sales_products_per_year
+)
+
+-- get the max products
+select
+
+    product_id,
+    YOY_Growth,
+    dense_rank() over (order by YOY_Growth desc) as max_yoy_growth
+    
+from add_sales_per_previous_year
+where YOY_Growth is not null</sql><sql name="wrong-right">-- SELECT 
+--     *,
+--     RANK() OVER (PARTITION BY customer_id order by amount) AS rank
+-- FROM sales
+-- ORDER BY rank DESC;
+
+
+-- SELECT 
+-- -- 	*,
+-- 	sale_date, amount, customer_id,
+-- 	SUM(amount) OVER (PARTITION by customer_id ORDER BY sale_date) AS running_total
+-- FROM sales;
+
+ 
+-- SELECT 
+-- 	*,
+--     AVG(amount) OVER (PARTITION BY customer_id) AS avg_amount,
+-- 	COUNT(*) OVER () AS total_rows_number
+--    
+-- FROM sales;
+-- 
+-- 
+SELECT 
+    *,
+    ROW_NUMBER() OVER (ORDER BY sale_date) AS row_num_date,
+    ROW_NUMBER() OVER (ORDER BY amount) AS row_num_amount
+FROM sales;
+</sql><current_tab id="5"/></tab_sql></sqlb_project>

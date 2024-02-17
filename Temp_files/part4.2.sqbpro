@@ -1,56 +1,101 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/elshe5/Downloads/Video/test/database/fct.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure query browser pragmas" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2071"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,29:mainfct_SampleSuperstore_Purchase"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="fct_SampleSuperstore_Purchase" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="219"/><column index="2" value="165"/><column index="3" value="117"/><column index="4" value="70"/><column index="5" value="116"/><column index="6" value="127"/><column index="7" value="84"/><column index="8" value="84"/><column index="9" value="86"/><column index="10" value="90"/><column index="11" value="224"/></column_widths><filter_values><column index="11" value=" - Consumer"/></filter_values><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="update hard coded">SELECT 
-	&quot;Purchase Transaction ID&quot;, 
-	&quot;Purchase_DATEID&quot;,
-	&quot;Ship Mode&quot;, 
-	&quot;Segment&quot;,
-	&quot;Region&quot;,
-	&quot;Category&quot;,
-	&quot;Sub-Category&quot;,
-	&quot;Type&quot;,
-	&quot;Sales&quot;, 
-	&quot;Quantity&quot;,
-	&quot;Discount&quot;, 
-	&quot;Profit&quot;
-FROM fct_SampleSuperstore_Purchase
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/elshe5/Downloads/Video/test/database/fct.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure query browser pragmas" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2071"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,29:mainfct_SampleSuperstore_Purchase"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="fct_SampleSuperstore_Purchase" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="219"/><column index="2" value="165"/><column index="3" value="117"/><column index="4" value="70"/><column index="5" value="116"/><column index="6" value="127"/><column index="7" value="84"/><column index="8" value="84"/><column index="9" value="86"/><column index="10" value="90"/><column index="11" value="224"/></column_widths><filter_values><column index="11" value=" - Consumer"/></filter_values><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="update hard coded">SELECT 
+	&quot;Purchase Transaction ID&quot;, 
+	&quot;Purchase_DATEID&quot;,
+	&quot;Ship Mode&quot;, 
+	&quot;Segment&quot;,
+	&quot;Region&quot;,
+	&quot;Category&quot;,
+	&quot;Sub-Category&quot;,
+	&quot;Type&quot;,
+	&quot;Sales&quot;, 
+	&quot;Quantity&quot;,
+	&quot;Discount&quot;, 
+	&quot;Profit&quot;
+FROM fct_SampleSuperstore_Purchase
+
+WHERE 
+
+&quot;Type&quot; like '% - Consumer'
+
+and 
+
+-- using string methods
+-- Purchase_DATEID like '1/%/2022'  -- if it is string
+
+-- using date methods (task3 ex 1 of snowflake)
+year(Purchase_DATEID) = 2022 and day(Purchase_DATEID) = 1
+</sql><sql name="update using aya ans">with
 
-WHERE 
+-- this cte must be in the stage phase or update the main table at the begining
+simplify_main_fct as (
 
-&quot;Type&quot; like '% - Consumer'
+	select
+        -- old columns
+        purchase_transaction_id,
+        ship_mode,
+        region,
+        category,
+        &quot;Sub-Category&quot;,
+        sales,
+        quantity,
+        discount,
+        profit,
 
-and 
+        -- new type split columns
+		split_part(Type, ' - ', 1) as shipment_type,
+		split_part(Type, ' - ', -1) as customer_type,
 
--- using string methods
--- Purchase_DATEID like '1/%/2022'  -- if it is string
+        -- new date split columns
+        day(purchase_dateid) as purchase_day,
+        month(purchase_dateid) as purchase_month,
+        year(purchase_dateid) as purchase_year
+		
+	from fct_SampleSuperstore_Purchase
 
--- using date methods (task3 ex 1 of snowflake)
-year(Purchase_DATEID) = 2022 and day(Purchase_DATEID) = 1
-</sql><sql name="check repeated values">WITH 
+),
 
-RECURSIVE numbers AS (
-  SELECT 0 AS number
-  UNION ALL
-  SELECT number + 1
-  FROM numbers
-  WHERE number &lt; 10
+filters as (
+
+    select
+    
+        *
+    
+    from simplify_main_fct
+
+    where 
+        customer_type = 'Consumer' and
+        purchase_day = 1 and
+        purchase_year = 2022
+    
 )
 
-SELECT * FROM numbers
-
--- SELECT column_name
--- FROM table_name
--- WHERE column_name IN (
---     SELECT 'value-' || number
---     FROM numbers
--- );
-</sql><sql name="check repeated values 2">DECLARE @i INT = 0;
-
-WHILE @i &lt;= 10
-BEGIN
-    PRINT 'value-' + CAST(@i AS VARCHAR(10));
-    SET @i = @i + 1;
-END;</sql><sql name="distinct Types">SELECT DISTINCT
-	Type
-	
-FROM fct_SampleSuperstore_Purchase
-
--- ('Second Class - Consumer', 'Standard Class - Consumer', 'First Class - Consumer', 'Same Day - Consumer') </sql><current_tab id="0"/></tab_sql></sqlb_project>
+SELECT * from filters</sql><sql name="check repeated values">WITH 
+
+RECURSIVE numbers AS (
+  SELECT 0 AS number
+  UNION ALL
+  SELECT number + 1
+  FROM numbers
+  WHERE number &lt; 10
+)
+
+SELECT * FROM numbers
+
+-- SELECT column_name
+-- FROM table_name
+-- WHERE column_name IN (
+--     SELECT 'value-' || number
+--     FROM numbers
+-- );
+</sql><sql name="check repeated values 2">DECLARE @i INT = 0;
+
+WHILE @i &lt;= 10
+BEGIN
+    PRINT 'value-' + CAST(@i AS VARCHAR(10));
+    SET @i = @i + 1;
+END;</sql><sql name="distinct Types">SELECT DISTINCT
+	Type
+	
+FROM fct_SampleSuperstore_Purchase
+
+-- ('Second Class - Consumer', 'Standard Class - Consumer', 'First Class - Consumer', 'Same Day - Consumer') </sql><current_tab id="1"/></tab_sql></sqlb_project>

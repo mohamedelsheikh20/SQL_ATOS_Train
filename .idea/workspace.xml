@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="661dece4-0d33-4e8f-b0cf-0353ffbf2dc7" name="Changes" comment="update readme file">
+    <list default="true" id="661dece4-0d33-4e8f-b0cf-0353ffbf2dc7" name="Changes" comment="update query 4.2 proj">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -75,13 +75,40 @@
       <option name="project" value="LOCAL" />
       <updated>1707655201284</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add task 4 part 2">
+      <option name="closed" value="true" />
+      <created>1707831451524</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1707831451524</updated>
+    </task>
+    <task id="LOCAL-00005" summary="update readme file v2">
+      <option name="closed" value="true" />
+      <created>1707831537935</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1707831537935</updated>
+    </task>
+    <task id="LOCAL-00006" summary="update query 4.2 proj">
+      <option name="closed" value="true" />
+      <created>1707831692229</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1707831692229</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Task3_updates_V2" />
     <MESSAGE value="Task4_Solv_V1, Add Main readme file" />
     <MESSAGE value="update readme file" />
-    <option name="LAST_COMMIT_MESSAGE" value="update readme file" />
+    <MESSAGE value="add task 4 part 2" />
+    <MESSAGE value="update readme file v2" />
+    <MESSAGE value="update query 4.2 proj" />
+    <option name="LAST_COMMIT_MESSAGE" value="update query 4.2 proj" />
   </component>
 </project>
